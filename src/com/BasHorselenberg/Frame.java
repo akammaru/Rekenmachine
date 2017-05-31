@@ -24,15 +24,18 @@ public class Frame extends JFrame {
         //generate the complete GUI.
         generateUI();
 
-
-
         //create the CalcLogic object.
         calcLogic = new CalcLogic();
+
+        keypad.setIKeypadListener(new IKeypadListener(){
+            @Override
+            public void listenKey(String keypadString){calcLogic.addCharacter(keypadString);}
+        });
 
         //changing background color of main pannel.
         frame.getContentPane().setBackground(Color.YELLOW);
         //setting heigth and width of main screan.
-        frame.setSize(800, 500);
+        frame.setSize(500, 300);
         //disable window resizing.
         frame.setResizable(false);
         //default close operation for shutting down java program when closed.
@@ -46,12 +49,12 @@ public class Frame extends JFrame {
         screen = new Screen();
         frame.add(screen, BorderLayout.CENTER);
         screen.setBackground(Color.WHITE);
-        screen.setBounds(0,0,800,150);
+//        screen.setBounds(0,0,800,150);
 
 
         //generate the keypad.
         keypad = new Keypad();
         frame.add(keypad, BorderLayout.SOUTH);
-        keypad.setBounds(0,0,800,350);
+//        keypad.setBounds(0,0,800,350);
     }
 }
