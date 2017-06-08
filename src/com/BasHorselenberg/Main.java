@@ -3,6 +3,7 @@ package com.BasHorselenberg;
 import javax.swing.*;
 
 /**
+ * @author Bas_Horselenberg
  * This class is the startup class.
  */
 public class Main {
