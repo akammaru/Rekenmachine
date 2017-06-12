@@ -14,11 +14,6 @@ public class Keypad extends JPanel implements ActionListener {
     private JTextField stored;
     private JTextField current;
 
-    // initialising default values
-    private String activeValue;
-    private String operator;
-    private String storedValue;
-
     // buttons 0 - 9
     private JButton number0;
     private JButton number1;
@@ -51,10 +46,6 @@ public class Keypad extends JPanel implements ActionListener {
     //adding custom listener
     private IKeypadListener keypadListener;
 
-    // adding counter for continued calculation.
-    private int equalsPressed;
-    private String continueCalc;
-
     /**
      * Main constructor for Keypad. all buttons and screens are initialised and added to the panel.
      */
@@ -68,11 +59,6 @@ public class Keypad extends JPanel implements ActionListener {
         JPanel keyboard = new JPanel();
         keyboard.setPreferredSize(new Dimension(500, 150));
         add(keyboard);
-
-
-        //setting default values
-        activeValue = "0";
-        storedValue = "0";
 
         //position Yrows
         int FIRST = 1;
@@ -248,7 +234,6 @@ public class Keypad extends JPanel implements ActionListener {
         keyboard.add(operatorMinus, gc);
         operatorMinus.addActionListener(this);
         // =
-        equalsPressed = 0;
         result = new JButton("=");
         gc.gridx = 4;
         gc.gridy = FOURTH;
@@ -297,141 +282,51 @@ public class Keypad extends JPanel implements ActionListener {
         JButton clicked = (JButton) e.getSource();
 
         if (clicked == number0) {
-            addCharacter("0");
+            send("0");
         } else if (clicked == number1) {
-            addCharacter("1");
+            send("1");
         } else if (clicked == number2) {
-            addCharacter("2");
+            send("2");
         } else if (clicked == number3) {
-            addCharacter("3");
+            send("3");
         } else if (clicked == number4) {
-            addCharacter("4");
+            send("4");
         } else if (clicked == number5) {
-            addCharacter("5");
+            send("5");
         } else if (clicked == number6) {
-            addCharacter("6");
+            send("6");
         } else if (clicked == number7) {
-            addCharacter("7");
+            send("7");
         } else if (clicked == number8) {
-            addCharacter("8");
+            send("8");
         } else if (clicked == number9) {
-            addCharacter("9");
+            send("9");
         } else if (clicked == operatorMinus) {
-            addCharacter("-");
-            resetActive();
+            send("-");
         } else if (clicked == operatorPlus) {
-            addCharacter("+");
-            resetActive();
+            send("+");
         } else if (clicked == operatorDevide) {
-            addCharacter("/");
-            resetActive();
+            send("/");
         } else if (clicked == operatorMultiply) {
-            addCharacter("*");
-            resetActive();
+            send("*");
         } else if (clicked == operatorDot) {
-            addCharacter(".");
-            resetActive();
+            send(".");
         } else if (clicked == operator1DevidedByX) {
-            addCharacter("x");
-            resetActive();
+            send("x");
         } else if (clicked == operatorSquarRoot) {
-            addCharacter("√");
-            resetActive();
+            send("√");
         } else if (clicked == operatorToPercentage) {
-            addCharacter("%");
-            resetActive();
+            send("%");
         } else if (clicked == removeOne) {
-            removeLast();
+            send("one");
         } else if (clicked == clearCurrent) {
-            resetActive();
+            send("current");
         } else if (clicked == clearAll) {
-            clearAll(false);
+            send("all");
         } else if (clicked == result) {
-            equalsPressed++;
-            if (equalsPressed == 1) {
-                startCalc();
-            } else {
-                continueCalc();
-            }
-
+            send("=");
         }
     }
-
-    /**
-     * check what the pressed key has been and handle it accordingly.
-     *
-     * @param input input characters comming from the keypad.
-     */
-    private void addCharacter(String input) {
-        //checking for a number inout with regx1
-        String regx1 = "(\\d)?(\\.)?";
-        //checking for the operators with regx2
-        String regx2 = "(\\+)?(\\-)?(\\*)?(\\/)?";
-        if (input.matches(regx1)) {
-            if (activeValue.equals("0")) {
-                activeValue = input;
-                setScreenCurrent(activeValue + " ");
-            } else {
-                activeValue = activeValue + input;
-                setScreenCurrent(activeValue + " ");
-            }
-        } else if (input.matches(regx2)) {
-            operator = input;
-            storedValue = activeValue;
-            setScreenRemembered(storedValue + " " + operator);
-        }
-    }
-
-    /**
-     * setting the current vaule to active screen.
-     *
-     * @param incomming value to set to active output.
-     */
-    private void setScreenCurrent(String incomming) { current.setText(incomming); }
-
-    /**
-     * setting the stored value to screen.
-     *
-     * @param saved value to be shown as stored.
-     */
-    private void setScreenRemembered(String saved) {
-        stored.setText(saved);
-    }
-
-    /**
-     * set both output fields at the same time.
-     *
-     * @param incomming String to be shown as the active value slot.
-     * @param saved String that will be placed in the stored value slot.
-     */
-    private void setBothScreens(String incomming, String saved) {
-        current.setText(incomming);
-        stored.setText(saved);
-    }
-
-    /**
-     * recieves an array with values to be displayed as the result.
-     *
-     * @param result array with details to be show.
-     */
-    public void setScreenResult(String[] result) {
-        String calculation = result[0];
-        String answer = result[1];
-        continueCalc = result[1];
-        setBothScreens(answer, calculation);
-    }
-
-    /**
-     * packs the two different calculation variables and the operator in to an array and sends it over to the controller.
-     */
-    private void sendData(String activeNumber, String storedNumber, String action) {
-        String[] data = new String[3];
-        data[0] = activeNumber;
-        data[1] = storedNumber;
-        data[2] = action;
-        keypadListener.listenKey(data);
-    }
-
 
     /**
      * setting connection interface.
@@ -443,53 +338,17 @@ public class Keypad extends JPanel implements ActionListener {
     }
 
     /**
-     * removes the last digit from the activeValue.
+     * sends input out to controler.
+     * @param toSend String to be send.
      */
-    private void removeLast() {
-        //doesnt work jet.
-        if (activeValue != null && activeValue.length() > 0 && activeValue.charAt(activeValue.length() - 1) == 'x') {
-            activeValue = activeValue.substring(0, activeValue.length() - 1);
-        }
+    private void send(String toSend){
+        keypadListener.listenKey(toSend);
     }
 
-    /**
-     * resets the active value for new input.
-     */
-    private void resetActive() {
-        activeValue = "0";
-        setScreenCurrent(activeValue);
-    }
-
-    /**
-     * logic for a continued calculation.
-     */
-    private void continueCalc() {
-        sendData(activeValue, storedValue, operator);
-
-
-
-    }
-
-    /**
-     * logic for the first calculation.
-     */
-    private void startCalc(){
-        sendData(activeValue, storedValue, operator);
-        clearAll(true);
-    }
-
-    /**
-     * removes all stored values and reprints them on the screen.
-     */
-    private void clearAll(boolean stringcalc) {
-        activeValue = "0";
-        storedValue = "0";
-        operator = "+";
-        if (stringcalc == true){
-            //do nothing
-        }else{
-            equalsPressed = 0;
-        }
-
+    public void setScreen(String[] input){
+        String saved = input[0];
+        String active = input[1];
+        current.setText(active);
+        stored.setText(saved);
     }
 }

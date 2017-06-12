@@ -39,18 +39,18 @@ public class Frame extends JFrame {
         // connection from keypad to CalcLogic.
         keypad.setKeypadListener(new IKeypadListener(){
             @Override
-            public void listenKey(String[] keypadArray) {
-                calcLogic.getData(keypadArray);
+            public void listenKey(String keypadValue) {
+                calcLogic.buildString(keypadValue);
             }
         });
 
         // connection from CalcLogic to keypad.
-        calcLogic.setLogicListener(new IKeypadListener(){
-            @Override
-            public void listenKey(String[] keypadArray) {
-                keypad.setScreenResult(keypadArray);
-            }
-        });
+            calcLogic.setOutput(new IToKeypad() {
+                @Override
+                public void stored(String[] output) {
+                    keypad.setScreen(output);
+                }
+            });
 
         //changing background color of main pannel.
         frame.getContentPane().setBackground(Color.YELLOW);
